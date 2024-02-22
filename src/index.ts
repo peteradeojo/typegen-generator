@@ -1,5 +1,3 @@
-import prettier from 'prettier';
-
 const capitalize = (str: string) => str[0].toUpperCase() + str.substring(1);
 
 function createRandomString(length: number) {
@@ -13,13 +11,13 @@ function createRandomString(length: number) {
 }
 
 export class Generator {
-  // string - string map of structs
+	// string - string map of structs
 	private typedefs: { [key: string]: any } = {};
 
-  // set of unique structs identified
+	// set of unique structs identified
 	private discoveredTypes: Set<any> = new Set();
 
-  // map of string to raw object value
+	// map of string to raw object value
 	private typeMaps: { [key: string]: any } = {};
 
 	constructor() {}
@@ -75,16 +73,17 @@ export class Generator {
 
 		const s = this.generateStruct(obj, name);
 		if (!this.discoveredTypes.has(JSON.stringify(s))) {
-      /**
-       * Thank God for Adeyemi Olusola Michael: https://github.com/Adeyemi-olusola
-       */
+			/**
+			 * Thank God for Adeyemi Olusola Michael: https://github.com/Adeyemi-olusola
+			 */
 			this.typeMaps[JSON.stringify(s)] = s;
 			this.discoveredTypes.add(JSON.stringify(s));
 			this.typedefs[JSON.stringify(s)] = name;
 		}
 	}
 
-	findStruct(item: any): string | void { // locate struct in set of identified unique structs
+	findStruct(item: any): string | void {
+		// locate struct in set of identified unique structs
 		if (this.discoveredTypes.has(JSON.stringify(item))) {
 			return this.typedefs[JSON.stringify(item)];
 		}
@@ -146,9 +145,7 @@ export class Generator {
 
 		output += `type ${name} = ${txt}`;
 
-		return await prettier.format(output, {
-			parser: 'typescript',
-		});
+    return output;
 	}
 }
 
@@ -417,8 +414,6 @@ if (require.main == module) {
 		},
 	];
 	(async () => {
-		console.log(
-		await g.resolve(data, 'Cat')
-		);
+		console.log(await g.resolve(data, 'Cat'));
 	})();
 }

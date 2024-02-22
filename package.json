@@ -13,12 +13,16 @@
     "start": "ts-node src/index.ts",
     "build": "tsc"
   },
-  "dependencies": {
-    "prettier": "^3.2.5"
-  },
+  "dependencies": {},
   "license": "ISC",
   "description": "Generating types from JS objects",
-  "keywords": ["types", "typescript", "dev", "tools", "utility"],
+  "keywords": [
+    "types",
+    "typescript",
+    "dev",
+    "tools",
+    "utility"
+  ],
   "author": {
     "name": "Peter Ade-Ojo",
     "url": "https://peteradeojo.vercel.app"
