@@ -125,7 +125,7 @@ export class Generator {
 		}
 	}
 
-	async resolve(obj: any, name: string) {
+	resolve(obj: any, name: string) {
 		this.discoveredTypes = new Set();
 
 		let output = '';
@@ -413,7 +413,5 @@ if (require.main == module) {
 			},
 		},
 	];
-	(async () => {
-		console.log(await g.resolve(data, 'Cat'));
-	})();
+  g.resolve(data, 'Cat');
 }
