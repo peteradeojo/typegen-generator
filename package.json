@@ -15,5 +15,13 @@
   },
   "dependencies": {
     "prettier": "^3.2.5"
-  }
+  },
+  "license": "ISC",
+  "description": "Generating types from JS objects",
+  "keywords": ["types", "typescript", "dev", "tools", "utility"],
+  "author": {
+    "name": "Peter Ade-Ojo",
+    "url": "https://peteradeojo.vercel.app"
+  },
+  "repository": "https://github.com/peteradeojo/typegen-generator"
 }
