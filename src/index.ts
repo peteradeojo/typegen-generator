@@ -2,7 +2,7 @@ import prettier from 'prettier';
 
 const capitalize = (str: string) => str[0].toUpperCase() + str.substring(1);
 
-export default class Generator {
+export class Generator {
 	private typedefs: { [key: string]: any } = {};
 	private discoveredTypes: Set<any> = new Set();
 
