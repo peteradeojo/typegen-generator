@@ -1,7 +1,16 @@
-import { randomBytes } from 'crypto';
 import prettier from 'prettier';
 
 const capitalize = (str: string) => str[0].toUpperCase() + str.substring(1);
+
+function createRandomString(length: number) {
+	const chars =
+		'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	let result = '';
+	for (let i = 0; i < length; i++) {
+		result += chars.charAt(Math.floor(Math.random() * chars.length));
+	}
+	return result;
+}
 
 export class Generator {
 	private typedefs: { [key: string]: any } = {};
@@ -22,7 +31,7 @@ export class Generator {
 	generateFromArray(item: any[]): string {
 		const types = new Set();
 		for (let i of item) {
-			types.add(this.generate(i, randomBytes(1).toString('hex')));
+			types.add(this.generate(i, createRandomString(4)));
 		}
 
 		const t: any[] = [];
@@ -146,7 +155,7 @@ if (require.main == module) {
 			car: {
 				make: 'Toyota',
 				chasis: {
-					num: ""
+					num: '',
 				},
 				years: [
 					2012,
