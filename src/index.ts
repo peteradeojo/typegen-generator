@@ -13,8 +13,14 @@ function createRandomString(length: number) {
 }
 
 export class Generator {
+  // string - string map of structs
 	private typedefs: { [key: string]: any } = {};
+
+  // set of unique structs identified
 	private discoveredTypes: Set<any> = new Set();
+
+  // map of string to raw object value
+	private typeMaps: { [key: string]: any } = {};
 
 	constructor() {}
 
@@ -39,8 +45,6 @@ export class Generator {
 			t.push(v);
 		});
 
-		// console.log(types);
-
 		return 'Array<' + t.join('|') + '>';
 	}
 
@@ -61,11 +65,6 @@ export class Generator {
 		if (this.checkIsArray(obj) !== 0) {
 			return;
 		}
-		// for (let i of Object.keys(obj)) {
-		// 	if (this.checkIsArray(obj[i]) == 0) {
-		// 		this.saveTypeDef(obj[i], i);
-		// 	}
-		// }
 		const ck = Object.keys(obj).filter(
 			(k: string) => this.checkIsArray(obj[k]) == 0
 		);
@@ -76,12 +75,16 @@ export class Generator {
 
 		const s = this.generateStruct(obj, name);
 		if (!this.discoveredTypes.has(JSON.stringify(s))) {
+      /**
+       * Thank God for Adeyemi Olusola Michael: https://github.com/Adeyemi-olusola
+       */
+			this.typeMaps[JSON.stringify(s)] = s;
 			this.discoveredTypes.add(JSON.stringify(s));
 			this.typedefs[JSON.stringify(s)] = name;
 		}
 	}
 
-	findStruct(item: any): string | void {
+	findStruct(item: any): string | void { // locate struct in set of identified unique structs
 		if (this.discoveredTypes.has(JSON.stringify(item))) {
 			return this.typedefs[JSON.stringify(item)];
 		}
@@ -132,7 +135,13 @@ export class Generator {
 
 		this.discoveredTypes.forEach(async (typedef) => {
 			const name = this.typedefs[typedef];
-			output += `type ${capitalize(name)} = ${typedef};\n\n`;
+			output += `type ${capitalize(name)} = {\n`;
+
+			for (let i of Object.keys(this.typeMaps[typedef])) {
+				output += `${i}: ${this.typeMaps[typedef][i]};\n`;
+			}
+
+			output += `};\n\n`;
 		});
 
 		output += `type ${name} = ${txt}`;
@@ -408,6 +417,8 @@ if (require.main == module) {
 		},
 	];
 	(async () => {
-		console.log(await g.resolve(data, 'Cat'));
+		console.log(
+		await g.resolve(data, 'Cat')
+		);
 	})();
 }
