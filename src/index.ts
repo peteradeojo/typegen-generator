@@ -1,3 +1,4 @@
+import { randomBytes } from 'crypto';
 import prettier from 'prettier';
 
 const capitalize = (str: string) => str[0].toUpperCase() + str.substring(1);
@@ -21,7 +22,7 @@ export class Generator {
 	generateFromArray(item: any[]): string {
 		const types = new Set();
 		for (let i of item) {
-			types.add(this.generate(i));
+			types.add(this.generate(i, randomBytes(1).toString('hex')));
 		}
 
 		const t: any[] = [];
@@ -99,12 +100,12 @@ export class Generator {
 		return t;
 	}
 
-	generate(item: any, name?: string) {
+	generate(item: any, name: string) {
 		switch (this.checkIsArray(item)) {
 			case -1:
 				return typeof item;
 			case 0:
-				this.saveTypeDef(item, name ? name : String(this.discoveredTypes.size));
+				this.saveTypeDef(item, name);
 				const g = this.generateFromObject(item);
 				return g;
 			case 1:
@@ -126,9 +127,10 @@ export class Generator {
 
 		output += `type ${name} = ${txt}`;
 
-		return await prettier.format(output, {
-			parser: 'typescript',
-		});
+		// return await prettier.format(output, {
+		// 	parser: 'typescript',
+		// });
+		return output;
 	}
 }
 
@@ -163,7 +165,20 @@ if (require.main == module) {
 			color: 'red',
 		},
 	];
+
+	const data = [
+		{
+			action: '',
+		},
+		{
+			name: '',
+			tasks: [],
+			move: {
+				direction: 'away',
+			},
+		},
+	];
 	(async () => {
-		console.log(await g.resolve(o, 'Cat'));
+		console.log(await g.resolve(data, 'Cat'));
 	})();
 }
