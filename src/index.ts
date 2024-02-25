@@ -1,8 +1,20 @@
 const capitalize = (str: string) => str[0].toUpperCase() + str.substring(1);
 
+const singularize = (str: string) => {
+	const preMapped: { [key: string]: string } = {
+		people: 'person',
+	};
+	const vowels = 'aeiou'.split('');
+	const s = str.toLowerCase();
+	if (s in preMapped) {
+		return preMapped[str.toLowerCase()];
+	}
+
+	return str;
+};
+
 function createRandomString(length: number) {
-	const chars =
-		'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+	const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 	let result = '';
 	for (let i = 0; i < length; i++) {
 		result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -15,7 +27,7 @@ export class Generator {
 	private typedefs: { [key: string]: any } = {};
 
 	// set of unique structs identified
-	private discoveredTypes: Set<any> = new Set();
+	private discoveredTypes: Set<string> = new Set();
 
 	// map of string to raw object value
 	private typeMaps: { [key: string]: any } = {};
@@ -32,10 +44,14 @@ export class Generator {
 		return 0;
 	}
 
-	generateFromArray(item: any[]): string {
+	generateFromArray(item: any[], name: string): string {
+		if (item.length == 0) {
+			return 'Array<never>';
+		}
+
 		const types = new Set();
 		for (let i of item) {
-			types.add(this.generate(i, createRandomString(4)));
+			types.add(this.generate(i, singularize(name))); //createRandomString(4)));
 		}
 
 		const t: any[] = [];
@@ -121,14 +137,26 @@ export class Generator {
 				const g = this.generateFromObject(item);
 				return g;
 			case 1:
-				return this.generateFromArray(item);
+				return this.generateFromArray(item, singularize(name));
 		}
+	}
+
+	discoveries() {
+		return {
+			types: this.discoveredTypes,
+			defs: this.typedefs,
+			maps: this.typeMaps,
+		};
 	}
 
 	resolve(obj: any, name: string) {
 		this.discoveredTypes = new Set();
+		this.typeMaps = {};
+		this.typedefs = {};
 
 		let output = '';
+
+		const c = this.checkIsArray(obj);
 
 		const txt = this.generate(obj, name);
 
@@ -143,8 +171,10 @@ export class Generator {
 			output += `};\n\n`;
 		});
 
-		output += `type ${name} = ${txt}`;
+		if (c !== 0) {
+			output += `type ${name} = ${txt};`;
+		}
 
-    return output;
+		return output;
 	}
 }
